@@ -13,7 +13,9 @@
     contacts: [],
     tab: "dashboard",
     openId: null,
-    match: {}
+    match: {},
+    started: false,
+    channels: {}
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -110,9 +112,12 @@
   function startApp() {
     $("deskLogin").hidden = true;
     $("deskApp").hidden = false;
+    if (!state.started) {
+      state.started = true;
+      wireSearch();
+      subscribeRealtime();
+    }
     loadData();
-    wireSearch();
-    subscribeRealtime();
   }
 
   function loadData() {
@@ -133,7 +138,8 @@
 
   function subscribeRealtime() {
     ["rfqs", "suppliers", "contacts"].forEach(function (table) {
-      state.client
+      if (state.channels[table]) return;
+      state.channels[table] = state.client
         .channel("desk-" + table)
         .on("postgres_changes", { event: "*", schema: "public", table: table }, function () {
           $("deskLive").textContent = "LIVE";
