@@ -207,8 +207,9 @@
     supplierForm: { company: "company_name", gst: "gst", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", moq: "moq", cities: "cities", notes: "notes" }
   };
 
-  var RE_PHONE = /^(\+?91[\s\-]?)?[6-9]\d{9}$/;
-  var RE_EMAIL = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  var RE_PHONE = /^[6-9]\d{9}$/;
+  var RE_EMAIL = /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
+  var BAD_EMAIL_DOMAINS = /(^|\.)(example\.com|example\.org|example\.net|test\.com|test\.org|yourdomain\.com|domain\.com|domain\.org|site\.com|mysite\.com|website\.com|email\.com|mail\.com|mailinator\.com|yopmail\.com|10minutemail\.com|guerrillamail\.com|throwawaymail\.com)$/i;
   var RE_GST = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
   var RE_PURITY = /^\d{1,3}(\.\d{1,4})?%?$/;
   var RE_NAME = /^[A-Za-z .'\-]{2,80}$/;
@@ -240,9 +241,9 @@
     } else if (name === "contact") {
       msg = req("Contact person is required.") || (!RE_NAME.test(value) ? "Enter a valid name (letters, spaces, dots)." : "");
     } else if (name === "phone") {
-      msg = req("Phone is required.") || (!RE_PHONE.test(value) ? "Enter a valid Indian mobile: 10 digits starting 6–9 (optional +91)." : "");
+      msg = req("Phone is required.") || (!RE_PHONE.test(value) ? "Enter a valid 10-digit Indian mobile (starts 6–9)." : "");
     } else if (name === "email") {
-      msg = value && !RE_EMAIL.test(value) ? "Enter a valid email address." : "";
+      msg = value && (!RE_EMAIL.test(value) ? "Enter a valid email address (e.g. name@company.com)." : BAD_EMAIL_DOMAINS.test(value) ? "That email domain looks fake — use a real one." : "");
     } else if (name === "gst") {
       msg = req("GST number is required.") ||
         (!RE_GST.test(value) ? "GST must be 15 characters (e.g. 27AAACP1234F1Z7)." : "") ||
