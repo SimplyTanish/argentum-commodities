@@ -31,7 +31,7 @@
   <section class="desk-login" id="deskLogin" hidden>
     <div class="desk-login-card">
       <p class="desk-login-mark">ARGENTUM <span>DESK</span></p>
-      <p class="desk-login-sub">Internal trading desk · restricted · build v8</p>
+      <p class="desk-login-sub">Internal trading desk · restricted · build v9</p>
       <form class="desk-login-form" id="loginForm" novalidate>
         <label class="desk-field">
           <span>Email</span>
@@ -60,7 +60,7 @@
           <button class="desk-tab" data-tab="deals">Deals</button>
         </nav>
         <div class="desk-header-right">
-          <span class="desk-live" id="deskLive">LIVE · v8</span>
+          <span class="desk-live" id="deskLive">LIVE · v9</span>
           <button class="desk-logout" id="logoutBtn">Exit</button>
         </div>
       </div>
@@ -151,6 +151,11 @@
             <span>Status</span>
             <select id="drawerStatus"></select>
           </label>
+          <div class="drawer-quick">
+            <button class="desk-open" id="markWonBtn" type="button">Mark Won</button>
+            <button class="desk-open" id="markLostBtn" type="button">Mark Lost</button>
+            <button class="desk-open" id="addToContactsBtn" type="button">Add to contacts</button>
+          </div>
         </div>
         <h3 class="drawer-match-title">Matching Suppliers</h3>
         <div class="drawer-match" id="drawerMatch"></div>
@@ -162,6 +167,6 @@
 
   <script src="js/supabase-config.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="window.__supaFailed=true"></script>
-  <script src="js/desk.js?v=8" defer></script>
+  <script src="js/desk.js?v=9" defer></script>
 </body>
 </html>

@@ -183,6 +183,9 @@
 .drawer-meta p { font-size: 0.9rem; font-weight: 300; color: var(--dim); display: flex; justify-content: space-between; gap: 1rem; }
 .drawer-meta p b { color: var(--text); font-weight: 500; text-align: right; }
 .drawer-status { margin-bottom: 1.6rem; }
+.drawer-quick { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+.drawer-quick .desk-open { flex: 1 1 auto; text-align: center; white-space: nowrap; }
+.drawer-quick .desk-open:disabled { opacity: 0.45; cursor: default; border-color: var(--border); color: var(--faint); }
 .drawer-match-title { font-family: var(--font-serif); font-weight: 600; font-size: 1.3rem; color: var(--text); margin-bottom: 1rem; }
 .desk-match-list { display: flex; flex-direction: column; }
 .match-item {

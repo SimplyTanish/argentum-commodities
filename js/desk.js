@@ -142,7 +142,7 @@
       state.channels[table] = state.client
         .channel("desk-" + table)
         .on("postgres_changes", { event: "*", schema: "public", table: table }, function () {
-          $("deskLive").textContent = "LIVE · v8";
+          $("deskLive").textContent = "LIVE · v9";
           loadData();
         })
         .subscribe();
@@ -300,6 +300,46 @@
   }
 
   /* ---------- Drawer / supplier match ---------- */
+  function contactExists(rfq) {
+    var co = (rfq.company_name || "").toLowerCase();
+    var ph = (rfq.phone || "").replace(/\D/g, "");
+    return state.contacts.some(function (c) {
+      if (co && (c.company_name || "").toLowerCase() === co) return true;
+      if (ph && (c.phone || "").replace(/\D/g, "") === ph) return true;
+      return false;
+    });
+  }
+
+  function addToContacts(rfq, remarks, cb) {
+    if (contactExists(rfq)) { cb && cb(false); return; }
+    state.client.from("contacts").insert([{
+      company_name: rfq.company_name,
+      person: rfq.contact_person,
+      phone: rfq.phone,
+      email: rfq.email,
+      type: "Buyer",
+      city: rfq.delivery_city,
+      remarks: remarks || ""
+    }]).then(function (res) {
+      if (res.error) console.error("add contact", res.error);
+      else loadData();
+      cb && cb(!res.error);
+    });
+  }
+
+  function setStatus(id, status, cb) {
+    state.client.from("rfqs").update({ status: status }).eq("id", id).then(function (res) {
+      if (res.error) { console.error("status", res.error); cb && cb(false); return; }
+      var r = state.rfqs.filter(function (x) { return x.id === id; })[0];
+      if (status === "Won" && r && !contactExists(r)) {
+        addToContacts(r, "Deal won", function () { cb && cb(true); });
+      } else {
+        loadData();
+        cb && cb(true);
+      }
+    });
+  }
+
   function wireDrawer() {
     document.querySelectorAll("[data-close-drawer]").forEach(function (el) {
       el.addEventListener("click", closeDrawer);
@@ -315,6 +355,28 @@
           closeDrawer();
           loadData();
         });
+    });
+    $("markWonBtn").addEventListener("click", function () {
+      if (!state.openId) return;
+      setStatus(state.openId, "Won", function () { closeDrawer(); loadData(); });
+    });
+    $("markLostBtn").addEventListener("click", function () {
+      if (!state.openId) return;
+      setStatus(state.openId, "Lost", function () { closeDrawer(); loadData(); });
+    });
+    $("addToContactsBtn").addEventListener("click", function () {
+      if (!state.openId) return;
+      var btn = this;
+      var r = state.rfqs.filter(function (x) { return x.id === state.openId; })[0];
+      if (!r) return;
+      addToContacts(r, "Added from RFQ", function (ok) {
+        btn.textContent = ok ? "Added ✓" : "Already in contacts";
+        btn.disabled = true;
+        setTimeout(function () {
+          btn.textContent = "Add to contacts";
+          btn.disabled = false;
+        }, 1600);
+      });
     });
   }
 
@@ -340,8 +402,11 @@
       return '<option value="' + s + '"' + (s === (r.status || "Pending") ? " selected" : "") + ">" + s + "</option>";
     }).join("");
     sel.onchange = function () {
-      state.client.from("rfqs").update({ status: sel.value }).eq("id", id).then(loadData);
+      setStatus(id, sel.value);
     };
+
+    $("addToContactsBtn").textContent = contactExists(r) ? "In contacts ✓" : "Add to contacts";
+    $("addToContactsBtn").disabled = contactExists(r);
 
     renderMatch(r);
 
