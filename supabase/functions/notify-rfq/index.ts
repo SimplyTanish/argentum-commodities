@@ -17,7 +17,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const NOTIFY_EMAIL_TO = Deno.env.get("NOTIFY_EMAIL_TO") ?? "trade@argentumcommodities.co.in";
+const NOTIFY_EMAIL_TO = Deno.env.get("NOTIFY_EMAIL_TO") ?? "argentumcommodities@proton.me";
 const EMAIL_FROM = Deno.env.get("NOTIFY_EMAIL_FROM") ?? "Desk <trading@argentumcommodities.com>";
 
 const corsHeaders = {

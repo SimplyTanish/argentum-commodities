@@ -405,7 +405,7 @@
                 showFormError(form, "This was already received in the last 10 minutes — our desk has it.");
               } else {
                 showFormError(form, "The desk could not accept this submission. Check the highlighted fields and try again, or email " +
-                  '<a href="mailto:trade@argentumcommodities.co.in" style="color:#c8ccd1;">trade@argentumcommodities.co.in</a>');
+                  '<a href="mailto:argentumcommodities@proton.me" style="color:#c8ccd1;">argentumcommodities@proton.me</a>');
               }
               return;
             }
