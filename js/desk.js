@@ -142,7 +142,7 @@
       state.channels[table] = state.client
         .channel("desk-" + table)
         .on("postgres_changes", { event: "*", schema: "public", table: table }, function () {
-          $("deskLive").textContent = "LIVE";
+          $("deskLive").textContent = "LIVE · v7";
           loadData();
         })
         .subscribe();
