@@ -60,32 +60,35 @@
     $("deskApp").hidden = true;
     var err = $("loginError");
     err.hidden = true;
-    $("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      err.hidden = true;
-      var email = $("loginEmail").value.trim();
-      var pass = $("loginPassword").value;
-      if (!email || !pass) { err.hidden = false; err.textContent = "Enter credentials."; return; }
-      var btn = $("loginBtn");
-      btn.disabled = true; btn.textContent = "Opening…";
-      state.client.auth.signInWithPassword({ email: email, password: pass })
-        .then(function (res) {
-          btn.disabled = false; btn.textContent = "Open Desk";
-          if (res.error) {
-            err.hidden = false;
-            err.textContent = "Sign-in failed. Check credentials.";
-            return;
-          }
-          startApp(res.data.session);
-        })
-        .catch(function () {
-          btn.disabled = false; btn.textContent = "Open Desk";
-          err.hidden = false;
-          err.textContent = "Network error. Try again.";
-        });
-    }, { once: true });
   }
-  function wireLogin() {}
+  function wireLogin() {
+    $("loginForm").addEventListener("submit", handleLogin);
+  }
+  function handleLogin(e) {
+    e.preventDefault();
+    var err = $("loginError");
+    err.hidden = true;
+    var email = $("loginEmail").value.trim();
+    var pass = $("loginPassword").value;
+    if (!email || !pass) { err.hidden = false; err.textContent = "Enter credentials."; return; }
+    var btn = $("loginBtn");
+    btn.disabled = true; btn.textContent = "Opening…";
+    state.client.auth.signInWithPassword({ email: email, password: pass })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Open Desk";
+        if (res.error) {
+          err.hidden = false;
+          err.textContent = (res.error.message || "Sign-in failed.") + " Check credentials.";
+          return;
+        }
+        startApp(res.data.session);
+      })
+      .catch(function () {
+        btn.disabled = false; btn.textContent = "Open Desk";
+        err.hidden = false;
+        err.textContent = "Network error. Try again.";
+      });
+  }
 
   /* ---------- App ---------- */
   function startApp() {
