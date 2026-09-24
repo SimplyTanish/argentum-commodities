@@ -83,10 +83,26 @@
         }
         startApp(res.data.session);
       })
-      .catch(function () {
+      .catch(function (ex) {
         btn.disabled = false; btn.textContent = "Open Desk";
         err.hidden = false;
-        err.textContent = "Network error. Try again.";
+        var m = (ex && ex.message) ? String(ex.message) : "";
+        if (/network|fetch|failed to fetch|load failed/i.test(m)) {
+          err.textContent = "Could not reach the desk server. Check your connection, VPN, or any ad/vpn blocker, then try again.";
+          pingDeskServer();
+        } else {
+          err.textContent = (m || "Network error.") + " Try again.";
+        }
+      });
+  }
+  function pingDeskServer() {
+    var live = $("loginError");
+    fetch("https://imhruhzbnsynturefqqk.supabase.co/auth/v1/health")
+      .then(function (r) {
+        live.textContent = "Desk server is reachable from this device (HTTP " + r.status + ") — please retry login. If it still fails, a VPN or blocker may be interfering.";
+      })
+      .catch(function () {
+        live.textContent = "This device cannot reach the desk server (blocked). Disable ad/VPN blockers or try another network.";
       });
   }
 
