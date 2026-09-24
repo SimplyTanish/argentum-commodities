@@ -1,8 +1,4 @@
-// ============================================================
-// ARGENTUM — Supabase public (anon) config
-// Anon key is public by design; data is locked behind RLS.
-// ============================================================
 window.ARGENTUM_SUPABASE = {
-  url: "",
-  anonKey: ""
+  url: "https://imhruhzbnsynturefqqk.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltaHJ1aHpibnN5bnR1cmVmcXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNDQxMDQsImV4cCI6MjEwNTgyMDEwNH0.2cCJy99XXyA2toXxSUGGAU7_0uCBce8FqzN8rkg5US0"
 };
