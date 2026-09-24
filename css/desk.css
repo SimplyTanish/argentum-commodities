@@ -2,6 +2,8 @@
    ARGENTUM DESK — internal CRM (Bloomberg-dark, Vantablack)
    ============================================================ */
 
+[hidden] { display: none !important; }
+
 .desk-body { background: var(--black); color: var(--text); font-family: var(--font-sans); }
 .desk-body * , .desk-body *::before, .desk-body *::after { box-sizing: border-box; }
 
