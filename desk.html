@@ -13,11 +13,25 @@
 
   <div class="grain-overlay" aria-hidden="true"></div>
 
+  <script>
+    window.addEventListener("error", function (ev) {
+      var el = document.getElementById("loginError");
+      if (el) { el.hidden = false; el.textContent = "Runtime error: " + (ev.message || "?") + " — check the browser console."; }
+      console.error(ev.error || ev.message);
+    });
+    window.addEventListener("unhandledrejection", function (ev) {
+      var el = document.getElementById("loginError");
+      var r = ev.reason && (ev.reason.message || ev.reason.toString()) || String(ev.reason || "?");
+      if (el) { el.hidden = false; el.textContent = "Runtime error: " + r + " — check the browser console."; }
+      console.error(ev.reason);
+    });
+  </script>
+
   <!-- ======= LOGIN ======= -->
   <section class="desk-login" id="deskLogin" hidden>
     <div class="desk-login-card">
       <p class="desk-login-mark">ARGENTUM <span>DESK</span></p>
-      <p class="desk-login-sub">Internal trading desk · restricted</p>
+      <p class="desk-login-sub">Internal trading desk · restricted · build v7</p>
       <form class="desk-login-form" id="loginForm" novalidate>
         <label class="desk-field">
           <span>Email</span>
