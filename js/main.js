@@ -203,9 +203,134 @@
   }
 
   var fieldNames = {
-    rfqForm: { company: "company_name", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", purity: "purity", quantity: "quantity", location: "delivery_city", by: "required_date", notes: "notes" },
+    rfqForm: { company: "company_name", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", purity: "purity", quantity: "quantity", location: "delivery_city", requiredBy: "required_date", notes: "notes" },
     supplierForm: { company: "company_name", gst: "gst", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", moq: "moq", cities: "cities", notes: "notes" }
   };
+
+  var RE_PHONE = /^(\+?91[\s\-]?)?[6-9]\d{9}$/;
+  var RE_EMAIL = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  var RE_GST = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+  var RE_PURITY = /^\d{1,3}(\.\d{1,4})?%?$/;
+  var RE_NAME = /^[A-Za-z .'\-]{2,80}$/;
+
+  function gstChecksumOk(gst) {
+    var v = gst.toUpperCase();
+    if (!RE_GST.test(v)) return false;
+    var sum = 0, i, c, val, prod;
+    for (i = 0; i < 14; i++) {
+      c = v.charCodeAt(i);
+      val = c >= 48 && c <= 57 ? c - 48 : c - 55;
+      prod = val * (i % 2 === 0 ? 1 : 2);
+      sum += Math.floor(prod / 10) + (prod % 10);
+    }
+    var ck = sum % 36 === 0 ? 0 : 36 - (sum % 36);
+    var last = v.charCodeAt(14);
+    var lastVal = last >= 48 && last <= 57 ? last - 48 : last - 55;
+    return ck === lastVal;
+  }
+
+  function validateField(input) {
+    if (!input || !input.name) return "";
+    var name = input.name;
+    var value = input.value ? input.value.trim() : "";
+    var msg = "";
+    var req = function (m) { return value ? "" : m; };
+    if (name === "company") {
+      msg = req("Company name is required.") || (value.length < 2 ? "Company name looks too short." : "");
+    } else if (name === "contact") {
+      msg = req("Contact person is required.") || (!RE_NAME.test(value) ? "Enter a valid name (letters, spaces, dots)." : "");
+    } else if (name === "phone") {
+      msg = req("Phone is required.") || (!RE_PHONE.test(value) ? "Enter a valid Indian mobile: 10 digits starting 6–9 (optional +91)." : "");
+    } else if (name === "email") {
+      msg = value && !RE_EMAIL.test(value) ? "Enter a valid email address." : "";
+    } else if (name === "gst") {
+      msg = req("GST number is required.") ||
+        (!RE_GST.test(value) ? "GST must be 15 characters (e.g. 27AAACP1234F1Z7)." : "") ||
+        (!gstChecksumOk(value) ? "GST checksum failed — verify the number." : "");
+    } else if (name === "commodity") {
+      msg = req("Commodity is required.") || (value.length < 2 ? "Commodity looks too short." : "");
+    } else if (name === "purity") {
+      msg = req("Purity is required.") || (!RE_PURITY.test(value) ? "Enter purity like 99.99 or 99.99%." : "");
+    } else if (name === "quantity") {
+      msg = req("Quantity is required.");
+      if (!msg) {
+        var n = parseFloat(value.replace(/[^\d.]/g, ""));
+        if (isNaN(n) || n <= 0) msg = "Enter a quantity greater than zero.";
+        else if (n >= 1000000) msg = "Quantity looks unrealistically large.";
+      }
+    } else if (name === "requiredBy") {
+      msg = req("Required-by date is required.");
+      if (!msg) {
+        var d = new Date(value + "T00:00:00");
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        if (isNaN(d.getTime())) msg = "Pick a valid date.";
+        else if (d < today) msg = "This date is in the past.";
+        else if (d.getTime() - today.getTime() > 1892160000000) msg = "This is more than 2 years out — check the timeline.";
+      }
+    } else if (name === "location") {
+      msg = req("Delivery location is required.") || (value.length < 2 ? "Location looks too short." : "");
+    } else if (name === "moq") {
+      msg = req("MOQ is required.") || (value.length < 2 ? "MOQ looks too short." : "");
+    } else if (name === "cities") {
+      msg = req("Cities served is required.") || (value.length < 2 ? "Cities looks too short." : "");
+    } else if (name === "notes") {
+      msg = value.length > 2000 ? "Notes are too long (max 2000 characters)." : "";
+    }
+    return msg;
+  }
+
+  var fieldErrors = {};
+  function attachFieldValidation(form) {
+    Array.prototype.forEach.call(form.querySelectorAll("input, textarea, select"), function (input) {
+      if (input.type === "hidden" || input.classList.contains("hpot") || !input.name) return;
+      var fieldEl = input.closest(".field");
+      if (!fieldEl) return;
+      var err = document.createElement("span");
+      err.className = "field-err";
+      err.hidden = true;
+      fieldEl.appendChild(err);
+      fieldErrors[input.name] = { input: input, fieldEl: fieldEl, err: err };
+      input.addEventListener("blur", function () { markField(input); });
+      input.addEventListener("input", function () { clearField(input); });
+    });
+  }
+  function markField(input) {
+    var rec = fieldErrors[input.name];
+    if (!rec) return;
+    var msg = validateField(input);
+    if (msg) {
+      rec.fieldEl.classList.add("is-invalid");
+      rec.err.textContent = msg;
+      rec.err.hidden = false;
+    } else {
+      clearField(input);
+    }
+  }
+  function clearField(input) {
+    var rec = fieldErrors[input.name];
+    if (!rec) return;
+    rec.fieldEl.classList.remove("is-invalid");
+    rec.err.hidden = true;
+  }
+  function validateForm(form) {
+    var bad = null;
+    Array.prototype.forEach.call(form.querySelectorAll("input, textarea, select"), function (input) {
+      if (input.type === "hidden" || input.classList.contains("hpot") || !input.name) return;
+      markField(input);
+      var rec = fieldErrors[input.name];
+      if (!bad && rec && rec.fieldEl.classList.contains("is-invalid")) bad = input;
+    });
+    if (bad) {
+      bad.focus({ preventScroll: true });
+      bad.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    }
+    return !bad;
+  }
+  function isBot(form) {
+    var h = form.querySelector(".hpot");
+    return !!(h && h.value && h.value.trim());
+  }
+  var lastSubmit = 0;
 
   function payloadFor(formId, form) {
     var map = fieldNames[formId];
@@ -244,14 +369,23 @@
     var form = document.getElementById(formId);
     var success = document.getElementById(successId);
     if (!form || !success) return;
+    attachFieldValidation(form);
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (!form.checkValidity()) {
-        form.reportValidity();
+      if (formErrors.parentNode === form) formErrors.remove();
+      if (isBot(form)) {
+        form.hidden = true;
+        success.hidden = false;
         return;
       }
-      if (formErrors.parentNode === form) formErrors.remove();
+      var now = Date.now();
+      if (now - lastSubmit < 4000) {
+        showFormError(form, "Please wait a few seconds before submitting again.");
+        return;
+      }
+      if (!validateForm(form)) return;
+      lastSubmit = now;
       if (supabaseClient) {
         var table = formId === "rfqForm" ? "rfqs" : "suppliers";
         var payload = payloadFor(formId, form);
@@ -266,8 +400,12 @@
             btn.disabled = false;
             btn.textContent = label;
             if (res.error) {
-              showFormError(form, "The desk could not receive this submission. Please try again or contact " +
-                '<a href="mailto:trade@argentumcommodities.co.in" style="color:#c8ccd1;">trade@argentumcommodities.co.in</a>');
+              if (res.error.message && /duplicate/i.test(res.error.message)) {
+                showFormError(form, "This was already received in the last 10 minutes — our desk has it.");
+              } else {
+                showFormError(form, "The desk could not accept this submission. Check the highlighted fields and try again, or email " +
+                  '<a href="mailto:trade@argentumcommodities.co.in" style="color:#c8ccd1;">trade@argentumcommodities.co.in</a>');
+              }
               return;
             }
             form.hidden = true;
@@ -279,7 +417,7 @@
           .catch(function () {
             btn.disabled = false;
             btn.textContent = label;
-            showFormError(form, "Network error — the desk could not receive this submission. Please try again.");
+            showFormError(form, "Network error — the desk could not receive this submission. Check the highlighted fields and try again.");
           });
       } else {
         form.hidden = true;

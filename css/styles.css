@@ -640,6 +640,9 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 .field + .form-note,
 .form-row + .form-note { margin-top: 0.95rem; }
 .field { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+.hpot { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.field.is-invalid input, .field.is-invalid textarea, .field.is-invalid select { border-color: rgba(255, 80, 80, 0.85); }
+.field-err { font-size: 0.7rem; color: #ff7b7b; letter-spacing: 0.04em; line-height: 1.5; margin-top: 0.35rem; }
 .field label {
   font-size: 0.6rem;
   font-weight: 600;

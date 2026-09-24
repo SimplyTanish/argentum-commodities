@@ -190,46 +190,47 @@
             <p class="form-head">Supplier Application</p>
             <div class="field">
               <label for="s-company">Company</label>
-              <input type="text" id="s-company" name="company" autocomplete="organization" required />
+              <input type="text" id="s-company" name="company" autocomplete="organization" required maxlength="120" />
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="s-gst">GST</label>
-                <input type="text" id="s-gst" name="gst" autocomplete="off" required />
+                <input type="text" id="s-gst" name="gst" autocomplete="off" required maxlength="15" placeholder="e.g. 27AAACP1234F1Z7" />
               </div>
               <div class="field">
                 <label for="s-phone">Phone</label>
-                <input type="tel" id="s-phone" name="phone" autocomplete="tel" required />
+                <input type="tel" id="s-phone" name="phone" autocomplete="tel" required maxlength="15" placeholder="+91 / 10-digit mobile" />
               </div>
             </div>
             <div class="field">
               <label for="s-contact">Contact Person</label>
-              <input type="text" id="s-contact" name="contact" autocomplete="name" required />
+              <input type="text" id="s-contact" name="contact" autocomplete="name" required maxlength="80" />
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="s-email">Email</label>
-                <input type="email" id="s-email" name="email" autocomplete="email" />
+                <input type="email" id="s-email" name="email" autocomplete="email" maxlength="120" />
               </div>
               <div class="field">
                 <label for="s-commodity">Commodity</label>
-                <input type="text" id="s-commodity" name="commodity" placeholder="Silver · Gold · Industrial" required />
+                <input type="text" id="s-commodity" name="commodity" placeholder="Silver · Gold · Industrial" required maxlength="60" />
               </div>
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="s-moq">MOQ</label>
-                <input type="text" id="s-moq" name="moq" placeholder="e.g. 25 kg / 500 kg / 1 tonne" required />
+                <input type="text" id="s-moq" name="moq" placeholder="e.g. 25 kg / 500 kg / 1 tonne" required maxlength="60" />
               </div>
               <div class="field">
                 <label for="s-cities">Cities Served</label>
-                <input type="text" id="s-cities" name="cities" placeholder="e.g. Mumbai, Delhi, Chennai" required />
+                <input type="text" id="s-cities" name="cities" placeholder="e.g. Mumbai, Delhi, Chennai" required maxlength="120" />
               </div>
             </div>
             <div class="field">
               <label for="s-notes">Notes</label>
-              <textarea id="s-notes" name="notes" rows="2" placeholder="Capacity, certifications, product range…"></textarea>
+              <textarea id="s-notes" name="notes" rows="2" placeholder="Capacity, certifications, product range…" maxlength="2000"></textarea>
             </div>
+            <input type="text" class="hpot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <p class="form-note">Every supplier undergoes manual verification before joining our sourcing network.</p>
             <button class="btn btn-solid btn-block" type="submit">Submit</button>
           </form>
@@ -263,41 +264,41 @@
             <div class="form-row">
               <div class="field">
                 <label for="r-company">Company</label>
-                <input type="text" id="r-company" name="company" autocomplete="organization" required />
+                <input type="text" id="r-company" name="company" autocomplete="organization" required maxlength="120" />
               </div>
               <div class="field">
                 <label for="r-contact">Contact Person</label>
-                <input type="text" id="r-contact" name="contact" autocomplete="name" required />
+                <input type="text" id="r-contact" name="contact" autocomplete="name" required maxlength="80" />
               </div>
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="r-phone">Phone</label>
-                <input type="tel" id="r-phone" name="phone" autocomplete="tel" required />
+                <input type="tel" id="r-phone" name="phone" autocomplete="tel" required maxlength="15" placeholder="+91 / 10-digit mobile" />
               </div>
               <div class="field">
                 <label for="r-email">Email</label>
-                <input type="email" id="r-email" name="email" autocomplete="email" />
+                <input type="email" id="r-email" name="email" autocomplete="email" maxlength="120" />
               </div>
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="r-commodity">Commodity</label>
-                <input type="text" id="r-commodity" name="commodity" placeholder="Silver bars · Gold · Copper" required />
+                <input type="text" id="r-commodity" name="commodity" placeholder="Silver bars · Gold · Copper" required maxlength="60" />
               </div>
               <div class="field">
                 <label for="r-purity">Purity</label>
-                <input type="text" id="r-purity" name="purity" placeholder="99.99%" required />
+                <input type="text" id="r-purity" name="purity" placeholder="99.99%" required maxlength="12" />
               </div>
             </div>
             <div class="form-row">
               <div class="field">
                 <label for="r-quantity">Quantity</label>
-                <input type="text" id="r-quantity" name="quantity" placeholder="e.g. 100 kg" required />
+                <input type="text" id="r-quantity" name="quantity" placeholder="e.g. 100 kg" required maxlength="20" />
               </div>
               <div class="field">
                 <label for="r-location">Delivery Location</label>
-                <input type="text" id="r-location" name="location" placeholder="City" required />
+                <input type="text" id="r-location" name="location" placeholder="City" required maxlength="80" />
               </div>
             </div>
             <div class="form-row">
@@ -307,9 +308,10 @@
               </div>
               <div class="field">
                 <label for="r-notes">Additional Notes</label>
-                <textarea id="r-notes" name="notes" rows="3" placeholder="Cutting, packaging, assay documentation, delivery terms…"></textarea>
+                <textarea id="r-notes" name="notes" rows="3" placeholder="Cutting, packaging, assay documentation, delivery terms…" maxlength="2000"></textarea>
               </div>
             </div>
+            <input type="text" class="hpot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <button class="btn btn-solid btn-block" type="submit">Open Trading Desk</button>
           </form>
           <div class="form-success" id="rfqSuccess" hidden>
@@ -416,6 +418,6 @@
 
   <script src="js/supabase-config.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="window.__supaFailed=true"></script>
-  <script src="js/main.js" defer></script>
+  <script src="js/main.js?v=9" defer></script>
 </body>
 </html>
