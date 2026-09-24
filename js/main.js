@@ -179,6 +179,67 @@
   }
 
   /* ---------- Forms ---------- */
+  var supabaseClient = null;
+  var haveSupa = (function () {
+    try {
+      var cfg = window.ARGENTUM_SUPABASE;
+      if (!cfg || !cfg.url || !cfg.anonKey) return false;
+      if (typeof window.supabase === "undefined") return false;
+      supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  })();
+
+  var formErrors = document.createElement("p");
+  formErrors.className = "form-error";
+  formErrors.style.cssText =
+    "color:#f2f2f2;background:rgba(242,242,242,.06);border:1px solid #ff000066;padding:.7rem 1rem;font-size:.78rem;margin-top:1rem;line-height:1.6;";
+  function showFormError(form, msg) {
+    formErrors.textContent = msg;
+    form.appendChild(formErrors);
+    formErrors.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  var fieldNames = {
+    rfqForm: { company: "company_name", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", purity: "purity", quantity: "quantity", location: "delivery_city", by: "required_date", notes: "notes" },
+    supplierForm: { company: "company_name", gst: "gst", contact: "contact_person", phone: "phone", email: "email", commodity: "commodity", moq: "moq", cities: "cities", notes: "notes" }
+  };
+
+  function payloadFor(formId, form) {
+    var map = fieldNames[formId];
+    var out = {};
+    Object.keys(map).forEach(function (key) {
+      var el = form.elements.namedItem(key);
+      var raw = el ? el.value.trim() : "";
+      if (!raw) return;
+      if (map[key] === "quantity") {
+        var n = parseFloat(raw.replace(/[^\d.]/g, ""));
+        if (!isNaN(n)) out.quantity = n;
+      } else if (map[key] === "required_date") {
+        out.required_date = raw || null;
+      } else {
+        out[map[key]] = raw;
+      }
+    });
+    return out;
+  }
+
+  function toast(msg) {
+    var t = document.createElement("div");
+    t.className = "supa-toast";
+    t.setAttribute("role", "status");
+    t.textContent = msg;
+    Object.assign(t.style, {
+      position: "fixed", bottom: "1.25rem", left: "50%", transform: "translateX(-50%)",
+      zIndex: 6000, background: "#090909", color: "#f2f2f2", border: "1px solid #c8ccd166",
+      padding: ".7rem 1.2rem", fontSize: ".78rem", letterSpacing: ".08em", fontFamily: "Inter, sans-serif"
+    });
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 3400);
+  }
+
   function initForm(formId, successId) {
     var form = document.getElementById(formId);
     var success = document.getElementById(successId);
@@ -190,10 +251,42 @@
         form.reportValidity();
         return;
       }
-      form.hidden = true;
-      success.hidden = false;
-      play("swipe");
-      success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      if (formErrors.parentNode === form) formErrors.remove();
+      if (supabaseClient) {
+        var table = formId === "rfqForm" ? "rfqs" : "suppliers";
+        var payload = payloadFor(formId, form);
+        var btn = form.querySelector("button[type=submit]");
+        btn.disabled = true;
+        var label = btn.textContent;
+        btn.textContent = "Sending…";
+        supabaseClient
+          .from(table)
+          .insert(payload)
+          .then(function (res) {
+            btn.disabled = false;
+            btn.textContent = label;
+            if (res.error) {
+              showFormError(form, "The desk could not receive this submission. Please try again or contact " +
+                '<a href="mailto:trade@argentumcommodities.co.in" style="color:#c8ccd1;">trade@argentumcommodities.co.in</a>');
+              return;
+            }
+            form.hidden = true;
+            success.hidden = false;
+            play("swipe");
+            toast(formId === "rfqForm" ? "RFQ received by the trading desk." : "Supplier application received.");
+            success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          })
+          .catch(function () {
+            btn.disabled = false;
+            btn.textContent = label;
+            showFormError(form, "Network error — the desk could not receive this submission. Please try again.");
+          });
+      } else {
+        form.hidden = true;
+        success.hidden = false;
+        play("swipe");
+        success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      }
     });
 
     var resets = success.querySelectorAll("[data-reset]");
@@ -202,6 +295,7 @@
         form.reset();
         success.hidden = true;
         form.hidden = false;
+        if (formErrors.parentNode === form) formErrors.remove();
         play("click");
       });
     });

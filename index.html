@@ -206,9 +206,15 @@
               <label for="s-contact">Contact Person</label>
               <input type="text" id="s-contact" name="contact" autocomplete="name" required />
             </div>
-            <div class="field">
-              <label for="s-commodity">Commodity</label>
-              <input type="text" id="s-commodity" name="commodity" placeholder="Silver · Gold · Industrial" required />
+            <div class="form-row">
+              <div class="field">
+                <label for="s-email">Email</label>
+                <input type="email" id="s-email" name="email" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="s-commodity">Commodity</label>
+                <input type="text" id="s-commodity" name="commodity" placeholder="Silver · Gold · Industrial" required />
+              </div>
             </div>
             <div class="form-row">
               <div class="field">
@@ -219,6 +225,10 @@
                 <label for="s-cities">Cities Served</label>
                 <input type="text" id="s-cities" name="cities" placeholder="e.g. Mumbai, Delhi, Chennai" required />
               </div>
+            </div>
+            <div class="field">
+              <label for="s-notes">Notes</label>
+              <textarea id="s-notes" name="notes" rows="2" placeholder="Capacity, certifications, product range…"></textarea>
             </div>
             <p class="form-note">Every supplier undergoes manual verification before joining our sourcing network.</p>
             <button class="btn btn-solid btn-block" type="submit">Submit</button>
@@ -256,8 +266,18 @@
                 <input type="text" id="r-company" name="company" autocomplete="organization" required />
               </div>
               <div class="field">
+                <label for="r-contact">Contact Person</label>
+                <input type="text" id="r-contact" name="contact" autocomplete="name" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
                 <label for="r-phone">Phone</label>
                 <input type="tel" id="r-phone" name="phone" autocomplete="tel" required />
+              </div>
+              <div class="field">
+                <label for="r-email">Email</label>
+                <input type="email" id="r-email" name="email" autocomplete="email" />
               </div>
             </div>
             <div class="form-row">
@@ -394,6 +414,8 @@
     </div>
   </footer>
 
+  <script src="js/supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="window.__supaFailed=true"></script>
   <script src="js/main.js" defer></script>
 </body>
 </html>

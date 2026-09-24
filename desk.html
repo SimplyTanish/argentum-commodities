@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="vantablack">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Argentum Desk — Trading Desk</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M10 8 L22 8 L24 24 L8 24 Z' fill='none' stroke='%23C8CCD1' stroke-width='1.5'/%3E%3Cpath d='M12 8 L20 8 L21 12 L11 12 Z' fill='%23C8CCD1' opacity='0.5'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/desk.css" />
+</head>
+<body class="desk-body">
+
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- ======= LOGIN ======= -->
+  <section class="desk-login" id="deskLogin" hidden>
+    <div class="desk-login-card">
+      <p class="desk-login-mark">ARGENTUM <span>DESK</span></p>
+      <p class="desk-login-sub">Internal trading desk · restricted</p>
+      <form class="desk-login-form" id="loginForm" novalidate>
+        <label class="desk-field">
+          <span>Email</span>
+          <input type="email" id="loginEmail" autocomplete="email" autofocus required />
+        </label>
+        <label class="desk-field">
+          <span>Password</span>
+          <input type="password" id="loginPassword" autocomplete="current-password" required />
+        </label>
+        <p class="desk-login-error" id="loginError" hidden></p>
+        <button class="btn btn-solid desk-login-btn" type="submit" id="loginBtn">Open Desk</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ======= APP ======= -->
+  <div class="desk-app" id="deskApp" hidden>
+    <header class="desk-header">
+      <div class="desk-header-inner">
+        <p class="desk-logo">ARGENTUM <span>DESK</span></p>
+        <nav class="desk-tabs" id="deskTabs">
+          <button class="desk-tab is-active" data-tab="dashboard">Dashboard</button>
+          <button class="desk-tab" data-tab="rfqs">RFQs</button>
+          <button class="desk-tab" data-tab="suppliers">Suppliers</button>
+          <button class="desk-tab" data-tab="contacts">Contacts</button>
+          <button class="desk-tab" data-tab="deals">Deals</button>
+        </nav>
+        <div class="desk-header-right">
+          <span class="desk-live" id="deskLive">LIVE</span>
+          <button class="desk-logout" id="logoutBtn">Exit</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="desk-main">
+
+      <!-- Dashboard -->
+      <section class="desk-pane" id="pane-dashboard">
+        <div class="desk-metrics" id="deskMetrics"></div>
+        <div class="desk-panel">
+          <h2 class="desk-panel-title">New Enquiries</h2>
+          <p class="desk-panel-note">Most recent RFQs awaiting the desk.</p>
+          <div class="desk-list" id="dashRfqs"></div>
+        </div>
+      </section>
+
+      <!-- RFQs -->
+      <section class="desk-pane" id="pane-rfqs" hidden>
+        <div class="desk-toolbar">
+          <input type="search" class="desk-search" id="rfqSearch" placeholder="Search company, commodity, city…" />
+          <select class="desk-filter" id="rfqStatusFilter">
+            <option value="">All statuses</option>
+            <option>Pending</option><option>Verified</option><option>Quoting</option>
+            <option>Negotiating</option><option>Won</option><option>Lost</option>
+          </select>
+        </div>
+        <div class="desk-table-wrap">
+          <table class="desk-table" id="rfqTable">
+            <thead><tr><th>Received</th><th>Company</th><th>Commodity</th><th>Quantity</th><th>City</th><th>Status</th><th></th></tr></thead>
+            <tbody id="rfqTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Suppliers -->
+      <section class="desk-pane" id="pane-suppliers" hidden>
+        <div class="desk-toolbar">
+          <input type="search" class="desk-search" id="supSearch" placeholder="Search supplier, commodity, city…" />
+        </div>
+        <div class="desk-table-wrap">
+          <table class="desk-table" id="supTable">
+            <thead><tr><th>Company</th><th>Commodity</th><th>MOQ</th><th>Cities</th><th>Contact</th><th>Verified</th></tr></thead>
+            <tbody id="supTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Contacts -->
+      <section class="desk-pane" id="pane-contacts" hidden>
+        <div class="desk-toolbar">
+          <input type="search" class="desk-search" id="conSearch" placeholder="Search company, person, city…" />
+        </div>
+        <div class="desk-table-wrap">
+          <table class="desk-table" id="conTable">
+            <thead><tr><th>Company</th><th>Person</th><th>Type</th><th>Phone</th><th>City</th><th>Remarks</th></tr></thead>
+            <tbody id="conTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Deals -->
+      <section class="desk-pane" id="pane-deals" hidden>
+        <div class="desk-metrics" id="dealMetrics" style="grid-template-columns:repeat(3,1fr)"></div>
+        <div class="desk-panel">
+          <h2 class="desk-panel-title">Closed Deals</h2>
+          <p class="desk-panel-note">RFQs marked Won on the desk.</p>
+          <div class="desk-list" id="dealList"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RFQ detail + supplier match drawer -->
+    <aside class="desk-drawer" id="deskDrawer" aria-hidden="true">
+      <div class="drawer-mask" data-close-drawer></div>
+      <div class="drawer-panel">
+        <header class="drawer-header">
+          <div>
+            <p class="drawer-kicker">TRADING DESK</p>
+            <h2 id="drawerTitle">RFQ</h2>
+          </div>
+          <button class="drawer-close" data-close-drawer aria-label="Close">×</button>
+        </header>
+        <div class="drawer-meta" id="drawerMeta"></div>
+        <div class="drawer-status">
+          <label class="desk-field">
+            <span>Status</span>
+            <select id="drawerStatus"></select>
+          </label>
+        </div>
+        <h3 class="drawer-match-title">Matching Suppliers</h3>
+        <div class="drawer-match" id="drawerMatch"></div>
+        <button class="btn btn-solid btn-block" id="sendRfqBtn">Send RFQ</button>
+        <p class="drawer-hint" id="sendHint">Marks the RFQ as Quoting and stores the selected suppliers. Email/WhatsApp dispatch can be wired later.</p>
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="window.__supaFailed=true"></script>
+  <script src="js/desk.js" defer></script>
+</body>
+</html>
