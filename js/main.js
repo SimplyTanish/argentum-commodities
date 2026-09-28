@@ -214,22 +214,6 @@
   var RE_PURITY = /^\d{1,3}(\.\d{1,4})?%?$/;
   var RE_NAME = /^[A-Za-z .'\-]{2,80}$/;
 
-  function gstChecksumOk(gst) {
-    var v = gst.toUpperCase();
-    if (!RE_GST.test(v)) return false;
-    var sum = 0, i, c, val, prod;
-    for (i = 0; i < 14; i++) {
-      c = v.charCodeAt(i);
-      val = c >= 48 && c <= 57 ? c - 48 : c - 55;
-      prod = val * (i % 2 === 0 ? 1 : 2);
-      sum += Math.floor(prod / 10) + (prod % 10);
-    }
-    var ck = sum % 36 === 0 ? 0 : 36 - (sum % 36);
-    var last = v.charCodeAt(14);
-    var lastVal = last >= 48 && last <= 57 ? last - 48 : last - 55;
-    return ck === lastVal;
-  }
-
   function validateField(input) {
     if (!input || !input.name) return "";
     var name = input.name;
@@ -246,8 +230,7 @@
       msg = value && (!RE_EMAIL.test(value) ? "Enter a valid email address (e.g. name@company.com)." : BAD_EMAIL_DOMAINS.test(value) ? "That email domain looks fake — use a real one." : "");
     } else if (name === "gst") {
       msg = req("GST number is required.") ||
-        (!RE_GST.test(value) ? "GST must be 15 characters (e.g. 27AAACP1234F1Z7)." : "") ||
-        (!gstChecksumOk(value) ? "GST checksum failed — verify the number." : "");
+        (!RE_GST.test(value) ? "GST must be 15 characters (e.g. 27AAACP1234F1Z7)." : "");
     } else if (name === "commodity") {
       msg = req("Commodity is required.") || (value.length < 2 ? "Commodity looks too short." : "");
     } else if (name === "purity") {
